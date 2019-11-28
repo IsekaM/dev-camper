@@ -10,14 +10,19 @@ const bootcamps = require('./routes/bootcamps');
 
 // App Vars
 const app = express();
-const PORT = process.env.PORT || 5000;
+const { log } = console;
 const DBPASS = process.env.DATABASE_PASSWORD;
 const DB = process.env.DATABASE.replace('<password>', DBPASS);
-
-const { log } = console;
+const PORT = process.env.PORT || 5000;
 
 // App Functions
 const serverStarted = () => log(`Server started on port: ${PORT}`);
+
+// Database Connection
+mongoose
+	.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
+	.then(con => log(`Database successfully connected to host: ${con.connection.host}`))
+	.catch(err => log(err));
 
 // Middlewares
 app.use(morgan('short'));
