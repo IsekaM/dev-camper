@@ -4,13 +4,15 @@
   "description": "I rest api for camping website.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=production nodemon app.js",
+    "dev": "nodemon app.js"
   },
   "author": "Makesi Morrison",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongoose": "^5.7.12"
+    "mongoose": "^5.7.12",
+    "morgan": "^1.9.1"
   }
 }
