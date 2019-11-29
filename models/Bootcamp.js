@@ -1,3 +1,4 @@
+// Required Modules
 const mongoose = require('mongoose');
 const BootcampSchema = new mongoose.Schema({
 	name: {
@@ -41,6 +42,7 @@ const BootcampSchema = new mongoose.Schema({
 		trim: true
 	},
 
+	/*
 	location: {
 		type: {
 			type: String, // Don't do `{ location: { type: String } }`
@@ -59,9 +61,10 @@ const BootcampSchema = new mongoose.Schema({
 		zipcode: String,
 		country: String
 	},
+	*/
 
 	careers: {
-		type: String,
+		type: [String],
 		required: true,
 		enum: ['Web Development', 'Mobile Development', 'UI/UX', 'Data Science', 'Business', 'Other']
 	},
