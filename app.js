@@ -5,8 +5,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 
-// Router Middleware
+// Required Middleware Modules
 const bootcamps = require('./routes/bootcampsRoute');
+const errorHandler = require('./middlewares/error');
 
 // App Vars
 const app = express();
@@ -20,7 +21,12 @@ const serverStarted = () => log(`Server started on port: ${PORT}`);
 
 // Database Connection
 mongoose
-	.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
+	.connect(DB, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useCreateIndex: true,
+		useFindAndModify: false
+	})
 	.then(con => log(`Database successfully connected to host: ${con.connection.host}`))
 	.catch(err => log(err));
 
@@ -28,6 +34,7 @@ mongoose
 app.use(morgan('short'));
 app.use(express.json());
 app.use('/api/v1/bootcamps', bootcamps);
+app.use(errorHandler);
 
 // Opening Server to the World :)
 app.listen(PORT, serverStarted);
