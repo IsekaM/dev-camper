@@ -19,7 +19,12 @@ bootcampController.get = asyncHandler(async (req, res, next) => {
 });
 
 bootcampController.getAll = asyncHandler(async (req, res, next) => {
-	const bootcamps = await Bootcamp.find({});
+	let queryStr = JSON.stringify(req.query);
+	queryStr = queryStr.replace(/\b(lt|gt|lte|gte|in)\b/g, match => `$${match}`);
+	queryStr = JSON.parse(queryStr);
+	console.log(queryStr);
+	const query = Bootcamp.find(queryStr);
+	const bootcamps = await query;
 	successResponse(res, 200, 'data fetched', bootcamps);
 });
 
