@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 
 // Required Middleware Modules
-const bootcamps = require('./routes/bootcampsRoute');
+const bootcamps = require('./routes/bootcampRoutes');
 const errorHandler = require('./middlewares/error');
 
 // App Vars

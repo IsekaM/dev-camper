@@ -13,4 +13,8 @@ router
 	.get(bootCampController.get)
 	.put(bootCampController.update);
 
+router
+	.route('/radius/:zipcode/:distance')
+	.get(bootCampController.getAllInRadius);
+
 module.exports = router;
