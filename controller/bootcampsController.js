@@ -3,7 +3,8 @@ const asyncHandler = require('../middlewares/asyncHandler');
 const geocoder = require('../utils/geocoder');
 const { successResponse } = require('../utils/responseUtil');
 const Bootcamp = require('../models/Bootcamp');
-const ErrorResponse = require('../utils/errorResponseUtil');
+const ErrorResponse = require('../utils/errorResponse');
+const splitQuery = require('../utils/splitQuery');
 
 // Controller Object
 const bootcampController = {};
@@ -19,31 +20,36 @@ bootcampController.get = asyncHandler(async (req, res, next) => {
 });
 
 bootcampController.getAll = asyncHandler(async (req, res, next) => {
-	let queryStr = JSON.stringify(req.query);
+	// Copy req.query
+	const reqQuery = { ...req.query };
+
+	// Exclud Specific Queries
+	const exclQueries = ['select', 'sort'];
+	exclQueries.forEach(query => delete reqQuery[query]);
+
+	// Fitering Queries
+	let queryStr = JSON.stringify(reqQuery);
 	queryStr = queryStr.replace(/\b(lt|gt|lte|gte|in)\b/g, match => `$${match}`);
 	queryStr = JSON.parse(queryStr);
-	console.log(queryStr);
-	const query = Bootcamp.find(queryStr);
+
+	// Setting up query
+	let  query = Bootcamp.find(queryStr);
+
+	// Select Query
+	if (req.query.select) {
+		const fields = splitQuery(req.query.select);
+		query = query.select(fields);
+	}
+
+	// Sort
+	if (req.query.sort) {
+		const sortBy = splitQuery(req.query.select);
+		query = query.sort(sortBy);
+	}
+
+	// Executing query
 	const bootcamps = await query;
 	successResponse(res, 200, 'data fetched', bootcamps);
-});
-
-bootcampController.create = asyncHandler(async (req, res, next) => {
-	const bootcamp = await Bootcamp.create(req.body);
-	successResponse(res, 201, 'data added', bootcamp);
-});
-
-bootcampController.update = asyncHandler(async (req, res, next) => {
-	const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-		new: true,
-		runValidators: true
-	});
-	successResponse(res, 201, 'data updated', bootcamp);
-});
-
-bootcampController.delete = asyncHandler(async (req, res, next) => {
-	const bootcamp = await Bootcamp.findOneAndDelete(req.params.id);
-	successResponse(res, 204, 'data deleted successfully');
 });
 
 bootcampController.getAllInRadius = asyncHandler(async (req, res, next) => {
@@ -64,6 +70,24 @@ bootcampController.getAllInRadius = asyncHandler(async (req, res, next) => {
 	});
 
 	successResponse(res, 200, 'data found', bootcamps);
+});
+
+bootcampController.create = asyncHandler(async (req, res, next) => {
+	const bootcamp = await Bootcamp.create(req.body);
+	successResponse(res, 201, 'data added', bootcamp);
+});
+
+bootcampController.update = asyncHandler(async (req, res, next) => {
+	const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+		new: true,
+		runValidators: true
+	});
+	successResponse(res, 201, 'data updated', bootcamp);
+});
+
+bootcampController.delete = asyncHandler(async (req, res, next) => {
+	const bootcamp = await Bootcamp.findOneAndDelete(req.params.id);
+	successResponse(res, 204, 'data deleted successfully');
 });
 
 module.exports = bootcampController;

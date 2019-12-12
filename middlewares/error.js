@@ -1,5 +1,5 @@
 const { failedResponse } = require('../utils/responseUtil');
-const ErrorResponse = require('../utils/errorResponseUtil');
+const ErrorResponse = require('../utils/errorResponse');
 const { log } = console;
 
 module.exports = (err, req, res, next) => {
