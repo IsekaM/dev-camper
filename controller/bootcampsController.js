@@ -24,7 +24,7 @@ bootcampController.getAll = asyncHandler(async (req, res, next) => {
 	const reqQuery = { ...req.query };
 
 	// Exclud Specific Queries
-	const exclQueries = ['select', 'sort'];
+	const exclQueries = ['select', 'sort', 'limit', 'page'];
 	exclQueries.forEach(query => delete reqQuery[query]);
 
 	// Fitering Queries
@@ -33,7 +33,7 @@ bootcampController.getAll = asyncHandler(async (req, res, next) => {
 	queryStr = JSON.parse(queryStr);
 
 	// Setting up query
-	let  query = Bootcamp.find(queryStr);
+	let query = Bootcamp.find(queryStr);
 
 	// Select Query
 	if (req.query.select) {
