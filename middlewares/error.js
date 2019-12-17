@@ -1,4 +1,4 @@
-const { failedResponse } = require('../utils/responseUtil');
+const { failedResponse } = require('../utils/response');
 const ErrorResponse = require('../utils/errorResponse');
 const { log } = console;
 

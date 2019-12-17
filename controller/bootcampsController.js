@@ -1,7 +1,7 @@
 // Required Modules
 const asyncHandler = require('../middlewares/asyncHandler');
 const geocoder = require('../utils/geocoder');
-const { successResponse } = require('../utils/responseUtil');
+const { successResponse } = require('../utils/response');
 const Bootcamp = require('../models/Bootcamp');
 const ErrorResponse = require('../utils/errorResponse');
 const splitQuery = require('../utils/splitQuery');
@@ -43,13 +43,33 @@ bootcampController.getAll = asyncHandler(async (req, res, next) => {
 
 	// Sort
 	if (req.query.sort) {
-		const sortBy = splitQuery(req.query.select);
+		const sortBy = splitQuery(req.query.sort);
 		query = query.sort(sortBy);
+	}
+
+	// Pagination
+	const page = parseInt(req.query.page) || 1;
+	const limit = parseInt(req.query.limit) || 25;
+	const startIndex = (page - 1) * limit;
+	const endIndex = page * limit;
+	const total = await Bootcamp.countDocuments();
+
+	query = query.skip(startIndex).limit(limit);
+
+	// Pagination result
+	const pagination = {};
+
+	if (endIndex < total) {
+		pagination.next = { page: page + 1, limit: limit };
+	}
+
+	if (startIndex > 0) {
+		pagination.prev = { page: page - 1, limit: limit };
 	}
 
 	// Executing query
 	const bootcamps = await query;
-	successResponse(res, 200, 'data fetched', bootcamps);
+	successResponse(res, 200, 'data fetched', bootcamps, pagination);
 });
 
 bootcampController.getAllInRadius = asyncHandler(async (req, res, next) => {
