@@ -1,45 +1,62 @@
 // Required Modules
 require('dotenv').config();
 
-const { promises: fs } = require('fs');
+const { readFileSync: readFile } = require('fs');
 const path = require('path');
 const Bootcamp = require('./models/Bootcamp');
-const connectDB = require('./utils/');
+const Courses = require('./models/Courses');
+const connectDB = require('./utils/connectDB');
+
+// Functions
+const { exit } = process;
 
 // Connect to database
 connectDB();
 
-// Helper function to read file
-async function readFile(fileName) {
+async function addToDb() {
+	let bootcamps = readFile(path.join(__dirname, '_data', 'bootcamps.json'), 'utf-8');
+	let courses = readFile(path.join(__dirname, '_data', 'courses.json'), 'utf-8');
+
+	//
+	[bootcamps, courses] = [JSON.parse(bootcamps), JSON.parse(courses)];
+
+	console.log(bootcamps);
+
 	try {
-		const file = await fs.readFile(fileName);
-		return file;
-	} catch (e) {
-		log(e);
+		await Bootcamp.create(bootcamps);
+		await Courses.create(courses);
+	} catch (error) {
+		console.error(error);
 	}
+
+	exit();
 }
 
-// Helper function to add data to database
-async function addToursToDB(data) {
+async function deleteFromDb() {
 	try {
-		await Bootcamp.deleteMany();
-		await Bootcamp.create(data);
-		log('Tours migrated successfully 😊');
-	} catch (e) {
-		log(e);
+		Bootcamp.deleteMany();
+		Courses.deleteMany();
+	} catch (error) {
+		console.error(error);
 	}
+
+	exit();
 }
 
-(async () => {
-	try {
-		log('Script started...');
-		let data = await readFile(path.resolve(__dirname, '_data', 'bootcamps.json'));
-		data = JSON.parse(data);
-		log(data);
-		await addToursToDB(data);
-	} catch (e) {
-		log(e);
+(() => {
+	const arg = process.argv[2];
+	// console.log(arg);
+
+	if (arg === '-d' || arg === '--delete') {
+		console.log('Deleted data from database(s) successfully');
+		return deleteFromDb();
 	}
 
-	process.exit();
+	if (arg === '-a' || arg === '--add') {
+		console.log('Added data to database(s) successfully');
+		return addToDb();
+	}
+
+	console.error('Wrong argument passed');
+	return exit();
 })();
