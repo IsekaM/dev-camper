@@ -1,4 +1,4 @@
-exports.successResponse = (res, status, message, data, pagination) => {
+exports.successResponse = (res, statusCode, message, data, pagination) => {
 	const body = {
 		success: true,
 		message: message
@@ -7,11 +7,11 @@ exports.successResponse = (res, status, message, data, pagination) => {
 	if (pagination) body.pagination = pagination;
 	if (data) body.data = data;
 
-	return res.status(status).json(body);
+	return res.status(statusCode).json(body);
 };
 
-exports.failedResponse = (res, status, message) => {
-	return res.status(status).json({
+exports.failedResponse = (res, statusCode, message) => {
+	return res.status(statusCode).json({
 		success: false,
 		message: message
 	});

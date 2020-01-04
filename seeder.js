@@ -4,7 +4,7 @@ require('dotenv').config();
 const { readFileSync: readFile } = require('fs');
 const path = require('path');
 const Bootcamp = require('./models/Bootcamp');
-const Courses = require('./models/Courses');
+const Course = require('./models/Course');
 const connectDB = require('./utils/connectDB');
 
 // Functions
@@ -24,7 +24,7 @@ async function addToDb() {
 
 	try {
 		await Bootcamp.create(bootcamps);
-		await Courses.create(courses);
+		await Course.create(courses);
 	} catch (error) {
 		console.error(error);
 	}
@@ -35,7 +35,7 @@ async function addToDb() {
 async function deleteFromDb() {
 	try {
 		Bootcamp.deleteMany();
-		Courses.deleteMany();
+		Course.deleteMany();
 	} catch (error) {
 		console.error(error);
 	}

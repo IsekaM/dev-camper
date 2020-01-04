@@ -5,8 +5,11 @@ const express = require('express');
 const morgan = require('morgan');
 const connectDB = require('./utils/connectDB');
 
-// Required Middleware Modules
+// Route Middlewares
 const bootcamps = require('./routes/bootcampRoutes');
+const courses = require('./routes/coursesRoute');
+
+// Error Handler Middleware
 const errorHandler = require('./middlewares/error');
 
 // App Vars
@@ -24,6 +27,7 @@ connectDB();
 app.use(morgan('short'));
 app.use(express.json());
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 app.use(errorHandler);
 
 // Opening Server to the World :)
